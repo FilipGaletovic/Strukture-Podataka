@@ -1,26 +1,72 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#define ERROR 1
-#define MAX 1024
-int NumberOfRows(char FileName);
+#include <stdlib.h>
 
-int main() {
-	int number_of_rows = 0;
-	number_of_rows = NumberOfRows("Studenti.txt");
+#define MAX_LINE 1024
+#define MAX_POINTS 15
+
+
+typedef struct _student {
+	char ime[50];
+	char prezime[50];
+	double points;
+} Student;
+
+int broj_redaka_file()
+{
+	int counter = 0;
+	char buffer[MAX_LINE] = { 0 };
+
+	FILE* fPointer = NULL;
+	fPointer = fopen("students.txt", "r");
+	if (!fPointer) {
+		printf("File not opened!\n");
+		return -1;
+	}
+
+	while (!feof(fPointer)) {
+		fgets(buffer, MAX_LINE, fPointer);
+		counter++;
+	}
+
+	fclose(fPointer);
+
+	return counter;
+}
+
+int main()
+{
+	int i = 0, broj_redaka = 0;
+	broj_redaka = broj_redaka_file();
+
+	if (broj_redaka > 0)
+	{
+		FILE* fP = NULL;
+		fP = fopen("students.txt", "r");
+		if (!fP) {
+			printf("File not opened!\n");
+			return -1;
+		}
+
+		Student* stud = NULL;
+		stud = (Student*)malloc(broj_redaka * sizeof(Student));
+		if (stud == NULL) {
+			printf("Malloc error!\n");
+			return 0;
+		}
+
+		for (i = 0; i < broj_redaka; i++) {
+			if (fscanf(fP, " %s %s %lf ", stud[i].ime, stud[i].prezime, &stud[i].points) != 3)
+				return 0;
+		}
+
+		for (i = 0; i < broj_redaka; i++) {
+			printf("%s %s %.2lf %.2lf\%\n", stud[i].ime, stud[i].prezime, stud[i].points, stud[i].points / MAX_POINTS * 100);
+		}
+
+		fclose(fP);
+		free(stud);
+	}
 
 	return 0;
-}
-int NumberOfRows(const char *FileName){
-
-	FILE* file = NULL;
-	file = fopen("", "r");
-	char buffer[MAX];
-	if (file == NULL) {
-		printf("Ne moze se otvoriti file");
-		return ERROR;
-	}
-	while (!feof(file)) {
-		fgets();
-		number_of_rows++;
-	}
 }
