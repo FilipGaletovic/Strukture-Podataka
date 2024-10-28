@@ -21,9 +21,11 @@ pozicija kreirajosobu();
 void unospocetak(pozicija);
 void unoskraj(pozicija);
 void ispis(pozicija);
-void pretrazi(pozicija,char[MAX]);
+pozicija pretrazi(pozicija, char[MAX]);
 void brisi(pozicija, char[MAX]);
-void izbrisilistu(pozicija );
+void izbrisilistu(pozicija);
+void dodaj_ispred(pozicija, char[MAX]);
+void dodaj_iza(pozicija, char[MAX]);
 
 
 int main()
@@ -40,67 +42,114 @@ int main()
     head->next = NULL;
     do
     {
-        printf("Izaberi 1 za dodat novi element na pocetak liste\n");
+        printf("\n\n\nIzaberi 1 za dodat novi element na pocetak liste\n");
         printf("Izaberi 2 za ispis liste\n");
         printf("Izaberi 3 za dodat novi element na kraj liste\n");
         printf("Izaberi 4 za pronalazak elementa po prezimenu\n");
-        printf("Izaberi 5 za brisanje odredenog elementa\n Izaberi 6 za kraj \n");
+
+        printf("Izaberi 5 za brisanje odredenog elementa\n");
+        printf("Izaberi 6 za dodavanje novog elementa iza određenog elementa\n");
+        printf("Izaberi 7 za dodavanje novog elementa ispred određenog elementa\n");
+        printf("Izaberi 8 za Sortiranje liste po prezimenu\n");
+        printf("Izaberi 9 za upis liste elemenata u datoteku i citanje liste iz iste te datoteke\n");
+        printf("Izaberi 10 za kraj programa\n\n\n\n");
+
+
+
         scanf("%d", &izbor);
-    
-    switch (izbor)
-    {
-    case 1:
-        unospocetak(head);
-        break;
-    case 2:
-        ispis(head);
-        break;
-    case 3:
-        unoskraj(head);
-        break;
-    case 4:
-        printf("unesi trazeno prezime: \n");
-        scanf("%s", prezime);
-        pretrazi(head, prezime);
-        break;
-    case 5:
-        printf("unesi prezime osobe koju zelis izbrisati \n ");
-        scanf("%s", prezime);
-        brisi(head, prezime);
-        break;
-    case 6:
-       
-        break;
-    default:
-        printf("\tGreska\n");
-        break;
-    }
-    } while ( izbor != 6);
+
+        switch (izbor)
+        {
+        case 1:
+            unospocetak(head);
+            break;
+        case 2:
+            ispis(head);
+            break;
+        case 3:
+            unoskraj(head);
+            break;
+        case 4:
+            {
+                printf("unesi trazeno prezime: \n");
+                scanf("%s", prezime);
+                pozicija trazeno = pretrazi(head, prezime);
+                if (trazeno) {
+                    printf("Ime: %s, Prezime: %s, Godina: %d", trazeno->ime, trazeno->prez, trazeno->god);
+                }
+                else {
+                    printf("Nema elementa");
+                }
+            }
+                break;
+        case 5:
+            printf("unesi prezime osobe koju zelis izbrisati \n ");
+            scanf("%s", prezime);
+            brisi(head, prezime);
+            break;
+        case 6:
+            printf("Unesi prezime osobe ispred koje unosimo novu osobu: ");
+            scanf("%s", prezime);
+            dodaj_ispred(head, prezime);
+        case 7:
+            printf("Unesi prezime osobe iza koje unosimo novu osobu: ");
+            scanf("%s", prezime);   
+            dodaj_iza(head, prezime);
+        case 10:
+            break;
+        default:
+            printf("\tGreska\n");
+            break;
+        }
+    } while (izbor != 10);
 
     izbrisilistu(head);
-   
+
 
     return 0;
 }
 
+
 pozicija kreirajosobu()
 {
     pozicija os = NULL;
-    os= (pozicija)malloc(sizeof(osoba));
+    os = (pozicija)malloc(sizeof(osoba));
     if (!os) return NULL;
     printf("unesi ime ");
     scanf("%s", os->ime);
     printf("unesi prezime ");
     scanf("%s", os->prez);
     printf("unesi godinu ");
-    scanf("%d",&os->god);
-    
+    scanf("%d", &os->god);
+
     return os;
 
 
 }
 
+void dodaj_ispred(pozicija head, char prezime[MAX]) {
+    pozicija nova_osoba = kreirajosobu();
+    pozicija temp = head->next;
+    pozicija trazena = pretrazi(head, prezime);
+    while (temp->next != trazena) {
+        temp = temp->next;
+    }
+    temp->next = nova_osoba;
+    nova_osoba->next = trazena;
+    
+}
 
+void dodaj_iza(pozicija head, char prezime[MAX]) {
+    pozicija nova_osoba = kreirajosobu();
+    pozicija temp = head->next;
+    pozicija trazena = pretrazi(head, prezime);
+    while (temp != trazena->next) {
+        temp = temp->next;
+    }
+    trazena->next = nova_osoba;
+    nova_osoba->next = temp;
+
+}
 void unospocetak(pozicija head)
 {
     pozicija novi;
@@ -139,31 +188,30 @@ void ispis(pozicija head)
         trenutni = trenutni->next;
     }
 }
-void pretrazi(pozicija head, char prezime[MAX])
+pozicija pretrazi(pozicija head, char prezime[MAX])
 {
-    int a=0;
+    int a = 0;
     pozicija temp = head->next;
     while (temp != NULL)
     {
 
-        if (strcmp(prezime, temp->prez) == 0) 
+        if (strcmp(prezime, temp->prez) == 0)
         {
-            printf("%s %s %d \n", temp->ime, temp->prez, temp->god);
-            a=1;
-            break;
+            a = 1;
+            return temp->next;
         }
         temp = temp->next;
     }
     if (a == 0)
-        printf("nema trazenog prezimena \n");
+        return NULL;
 }
 void brisi(pozicija head, char prezime[MAX])
 {
-   
+
     pozicija prethodni = head;
-    pozicija trenutni=NULL;
+    pozicija trenutni = NULL;
     while (prethodni->next != NULL && strcmp(prethodni->next->prez, prezime))
-    {   
+    {
         prethodni = prethodni->next;
 
     }
@@ -181,7 +229,7 @@ void brisi(pozicija head, char prezime[MAX])
 }
 void izbrisilistu(pozicija head)
 {
-    pozicija temp =NULL;
+    pozicija temp = NULL;
     while (head->next != NULL)
     {
         temp = head->next;
