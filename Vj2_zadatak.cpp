@@ -94,7 +94,7 @@ int main() {
             break;
         case 9:
             upisi_u_datoteku(head, "osobe.txt");
-            izbrisilistu(head);  // Clear the list before loading
+            izbrisilistu(head);  
             ucitaj_iz_datoteke(head, "osobe.txt");
             break;
         case 10:
@@ -244,7 +244,6 @@ void upisi_u_datoteku(pozicija head, const char* filename) {
         fprintf(fp, "%s %s %d\n", temp->ime, temp->prez, temp->god);
         temp = temp->next;
     }
-    // Zatvaramo datoteku
     fclose(fp);
 }
 
@@ -255,7 +254,6 @@ void ucitaj_iz_datoteke(pozicija head, const char* filename) {
         return;
     }
 
-    // Pozicioniramo se na kraj liste
     pozicija current = head;
     while (current->next != NULL) {
         current = current->next;
@@ -264,14 +262,12 @@ void ucitaj_iz_datoteke(pozicija head, const char* filename) {
     char ime[MAX], prez[MAX];
     int god;
     while (fscanf(fp, "%s %s %d", ime, prez, &god) == 3) {
-        // Kreiramo novi čvor
         pozicija nova_osoba = (pozicija)malloc(sizeof(osoba));
         strcpy(nova_osoba->ime, ime);
         strcpy(nova_osoba->prez, prez);
         nova_osoba->god = god;
         nova_osoba->next = NULL;
 
-        // Dodajemo novi čvor na kraj liste
         current->next = nova_osoba;
         current = current->next;
     }
